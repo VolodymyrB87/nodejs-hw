@@ -1,23 +1,15 @@
 import { Joi, Segments } from 'celebrate';
 import { isValidObjectId } from 'mongoose';
+import { TAGS } from '../constants/tags.js';
 
 export const getAllNotesSchema = {
   [Segments.QUERY]: Joi.object({
-    page: Joi.number().integer().min(1),
-    perPage: Joi.number().integer().min(3).max(20),
-    tag: Joi.string().valid(
-      'Work',
-      'Personal',
-      'Meeting',
-      'Shopping',
-      'Ideas',
-      'Travel',
-      'Finance',
-      'Health',
-      'Important',
-      'Todo',
-    ),
-    search: Joi.string().trim().allow(''),
+    page: Joi.number().integer().min(1).default(1),
+    perPage: Joi.number().integer().min(5).max(20).default(10),
+    tag: Joi.string()
+      .valid(...TAGS)
+      .optional(),
+    search: Joi.string().trim().allow('').optional(),
   }),
 };
 const objectIdValidator = (value, helpers) => {
@@ -28,24 +20,13 @@ export const noteIdSchema = {
     noteId: Joi.string().custom(objectIdValidator).required(),
   }),
 };
-export const creatNoteSchema = {
+export const createNoteSchema = {
   [Segments.BODY]: Joi.object({
-    title: Joi.string().required(),
-    content: Joi.string().required(),
+    title: Joi.string().min(1).required(),
+    content: Joi.string().optional(),
     tag: Joi.string()
-      .valid(
-        'Work',
-        'Personal',
-        'Meeting',
-        'Shopping',
-        'Ideas',
-        'Travel',
-        'Finance',
-        'Health',
-        'Important',
-        'Todo',
-      )
-      .required(),
+      .valid(...TAGS)
+      .optional(),
   }),
 };
 export const updateNoteSchema = {
@@ -53,21 +34,10 @@ export const updateNoteSchema = {
     noteId: Joi.string().custom(objectIdValidator).required(),
   }),
   [Segments.BODY]: Joi.object({
-    title: Joi.string().required(),
-    content: Joi.string().required(),
+    title: Joi.string().optional(),
+    content: Joi.string().optional(),
     tag: Joi.string()
-      .valid(
-        'Work',
-        'Personal',
-        'Meeting',
-        'Shopping',
-        'Ideas',
-        'Travel',
-        'Finance',
-        'Health',
-        'Important',
-        'Todo',
-      )
-      .required(),
+      .valid(...TAGS)
+      .optional(),
   }).min(1),
 };
